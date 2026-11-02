@@ -1,10 +1,13 @@
 import pytest
 
+from data import BurgerData
+
 
 class TestBurger:
-    def test_new_burger_is_empty(self, burger):
-        assert burger.bun is None
-        assert burger.ingredients == []
+    def test_burger_without_ingredients_has_bun_price(self, burger, bun):
+        burger.set_buns(bun)
+
+        assert burger.get_price() == BurgerData.BUN_PRICE * 2
 
     def test_set_buns(self, burger, bun):
         burger.set_buns(bun)
@@ -33,21 +36,14 @@ class TestBurger:
 
         assert burger.ingredients == [ingredients[1], ingredients[0]]
 
-    @pytest.mark.parametrize("count,expected", [(0, 200), (1, 225), (2, 275)])
+    @pytest.mark.parametrize("count,expected", BurgerData.PRICES)
     def test_get_price(self, burger, bun, ingredients, count, expected):
         burger.set_buns(bun)
         burger.ingredients = ingredients[:count]
 
         assert burger.get_price() == expected
 
-    @pytest.mark.parametrize(
-        "count,expected",
-        [
-            (0, "(==== Краторная булка ====)\n(==== Краторная булка ====)\n\nPrice: 200"),
-            (2, "(==== Краторная булка ====)\n= sauce Соус =\n= filling Начинка =\n"
-                "(==== Краторная булка ====)\n\nPrice: 275"),
-        ],
-    )
+    @pytest.mark.parametrize("count,expected", BurgerData.RECEIPTS)
     def test_get_receipt(self, burger, bun, ingredients, count, expected):
         burger.set_buns(bun)
         burger.ingredients = ingredients[:count]
